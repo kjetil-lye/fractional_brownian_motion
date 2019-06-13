@@ -1,5 +1,6 @@
 #pragma once
 #include "fbm/impl/data_3d.hpp"
+#include "fbm/impl/data_3d_out.hpp"
 #include "fbm/impl/variance_fbm_3d.hpp"
 
 namespace fbm {
@@ -17,15 +18,23 @@ inline std::vector<double> fractional_brownian_bridge_3d(double H, int nx,
 
 
 
-inline void fractional_brownian_bridge_3d(double* data_out, double H, int nx,
+inline void fractional_brownian_bridge_3d(double* data_out_pointer, double H, int nx,
     const double* X) {
-    impl::Data3D data(data_out, nx + 1);
+    impl::Data3D data(data_out_pointer, nx + 1);
 
     impl::VarianceFBM3D variance(X, nx + 1, H);
 
     int level_nx = 1;
 
     int level = 1;
+
+    // We do not want to set data on the boundary
+    auto not_on_boundary = [&](int x, int y, int z) {
+        return x!= 0 && x != nx && y != 0 && y != nx && z != 0 && z != nx;
+    };
+
+    // This throws away data we are trying to set on the boundary
+    impl::Data3DOut data_out (data, not_on_boundary);
 
     while (level_nx < nx) {
 
@@ -51,27 +60,30 @@ inline void fractional_brownian_bridge_3d(double* data_out, double H, int nx,
 
                     // LINE SEGMENTS
                     // x
-                    data(mid_x, left_y, left_z) =
+                    data_out(mid_x, left_y, left_z) =
                         (data(left_x, left_y, left_z) +
                             data(right_x, left_y, left_z)) / 2.0 +
                         variance(mid_x, left_y, left_z, level);
 
+
+
                     // y
-                    data(left_x, mid_y, left_z) =
+                    data_out(left_x, mid_y, left_z) =
                         (data(left_x, left_y, left_z) +
                             data(left_x, right_y, left_z)) /
                         2.0 +
                         variance(left_x, mid_y, left_z, level);
 
+
                     // z
-                    data(left_x, left_y, mid_z) =
+                    data_out(left_x, left_y, mid_z) =
                         (data(left_x, left_y, left_z) +
                             data(left_x, left_y, right_z)) / 2.0 +
                         variance(left_x, left_y, mid_z, level);
 
                     // SIDES
                     // x
-                    data(mid_x, mid_x, left_z) =
+                    data_out(mid_x, mid_x, left_z) =
                         (data(left_x, left_y, left_z) +
                             data(right_x, left_y, left_z) +
                             data(left_x, right_y, left_z) +
@@ -79,7 +91,7 @@ inline void fractional_brownian_bridge_3d(double* data_out, double H, int nx,
                         variance(mid_x, mid_y, left_z, level);
 
                     // y
-                    data(mid_x, left_y, mid_z) =
+                    data_out(mid_x, left_y, mid_z) =
                         (data(left_x, left_y, left_z) +
                             data(right_x, left_y, left_z) +
                             data(left_x, left_y, right_z) +
@@ -87,14 +99,14 @@ inline void fractional_brownian_bridge_3d(double* data_out, double H, int nx,
                         variance(mid_x, left_y, mid_z, level);
 
                     // z
-                    data(left_x, mid_y, mid_z) =
+                    data_out(left_x, mid_y, mid_z) =
                         (data(left_x, left_y, left_z) + data(left_x, right_y, left_z) +
                             data(left_x, left_y, right_z) + data(left_x, right_y, right_z)) /
                         4.0 +
                         variance(left_x, mid_y, mid_z, level);
 
                     // CENTER POINT
-                    data(mid_x, mid_y, mid_z) =
+                    data_out(mid_x, mid_y, mid_z) =
                         (data(left_x, left_y, left_z) + data(right_x, left_y, left_z) +
                             data(right_x, right_y, left_z) +
                             data(right_x, right_y, right_z) +
