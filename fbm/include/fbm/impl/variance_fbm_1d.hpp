@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <vector>
+#include <iostream>
 namespace fbm {
 namespace impl {
 class VarianceFBM1D {
@@ -12,7 +13,16 @@ public:
         : X(X), nx(nx), H(H) {}
 
     double operator()(int x, int level) const {
-        return variancefBm(level) * X[x];
+        // If we are on the boundary, we don't return any variance
+        if (x == 0 || x == nx - 1) {
+            return 0;
+        }
+
+
+        // Todo: make this pure bitshift one day.
+        const int index = (1 << (level - 1)) + x / ((nx - 1) >> (level - 1));
+
+        return variancefBm(level) * X[index - 1];
     }
 
     double variancefBm(int level) const {
