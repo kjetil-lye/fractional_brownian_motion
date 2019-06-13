@@ -15,9 +15,13 @@ namespace fbm {
 //!
 //! @returns a (nx+1)^3 array of fractional Brownian bridge. Sides are equal to
 //! zero.
-std::vector<double> fractional_brownian_bridge_3d(double H, int nx, const std::vector<double>& X);
+std::vector<double> fractional_brownian_bridge_3d(double H, int nx,
+    const std::vector<double>& X);
 
 
 void
-fractional_brownian_bridge_3d(double* data_out, double H, int nx, const double* X);
+fractional_brownian_bridge_3d(double* data_out, double H, int nx,
+    const double* X);
 }
+
+#include "fbm/impl/fbm_inl.hpp"
