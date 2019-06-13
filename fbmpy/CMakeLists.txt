@@ -9,4 +9,4 @@ add_library(fbmpy SHARED src/fbmpy.cpp)
 set_target_properties(fbmpy PROPERTIES PREFIX "")
 
 target_include_directories(fbmpy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(fbmpy Boost::python${FBMPY_PYTHON_VERSION} Boost::numpy${FBMPY_PYTHON_VERSION} fbm Python::Python)
+target_link_libraries(fbmpy Boost::python${FBM_PYTHON_VERSION_PURE} Boost::numpy${FBM_PYTHON_VERSION_PURE} fbm Python::Python)
