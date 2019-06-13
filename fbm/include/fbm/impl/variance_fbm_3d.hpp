@@ -16,7 +16,7 @@ public:
 
     double variancefBm(int level) const {
         return std::sqrt(
-                (1.0 - std::pow(2.0, (2 * H - 2)) / (std::pow(2, (2 * level * H)))));
+                (1.0 - std::pow(2.0, (2 * H - 2))) / (std::pow(2, (2 * level * H))));
     }
 
 private:
