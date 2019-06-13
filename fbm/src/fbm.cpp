@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
 
+namespace {
 class Data3D {
 public:
   Data3D(int nx) :
@@ -20,15 +22,15 @@ public:
 
 class VarianceFBM {
 public:
-  Variance(const std::vector<double>& X, int nx, double H) : X(X), nx(nx), ny(ny), nz(nz), H(H) {
+  VarianceFBM(const std::vector<double>& X, int nx, double H) : X(X), nx(nx), ny(ny), nz(nz), H(H) {
   }
   
   double operator()(int x, int y, int z, int level) const {
     return variancefBm(level)*X[z*nx*ny + y*nx + x];
   }
 
-  double variancefBm(int level) {
-    return std::sqrt((1.0-std::pow(2.0, (2*H-2))/(std::pow(2, (2*level*H)));
+  double variancefBm(int level) const {
+    return std::sqrt((1.0-std::pow(2.0, (2*H-2))/(std::pow(2, (2*level*H)))));
   }
 
 private:
@@ -36,6 +38,8 @@ private:
   int nx, ny, nz;
   double H;
 };
+
+  }
 
 std::vector<double> fbm3d(double H, int nx, const std::vector<double>& X) {
   
@@ -89,12 +93,12 @@ std::vector<double> fbm3d(double H, int nx, const std::vector<double>& X) {
 
 	  // y
 	  data(mid_x, left_y, mid_z) = (data(left_x, left_y, left_z) + data(right_x, left_y, left_z)
-	    data(left_x, left_y, right_z) + data(right_x, left_y, right_z))/4.0
+	    + data(left_x, left_y, right_z) + data(right_x, left_y, right_z))/4.0
 	    + variance(mid_x, left_y, mid_z, level);
 
 	  // z
 	  data(left_x, mid_y, mid_z) = (data(left_x, left_y, left_z) + data(left_x, right_y, left_z)
-	    data(left_x, left_y, right_z) + data(left_x, right_y, right_z))/4.0
+	    + data(left_x, left_y, right_z) + data(left_x, right_y, right_z))/4.0
 	    + variance(left_x, mid_y, mid_z, level);
 
 
@@ -107,7 +111,7 @@ std::vector<double> fbm3d(double H, int nx, const std::vector<double>& X) {
 				       data(left_x, right_y, left_z) +
 				       data(left_x, right_y, right_z) +
 				       data(left_x, left_y, right_z))/8.0
-	    + variance(mid_x, mid_y, mid_z);
+	    + variance(mid_x, mid_y, mid_z,level);
 	  
 	}
       }
@@ -116,7 +120,7 @@ std::vector<double> fbm3d(double H, int nx, const std::vector<double>& X) {
 
     level_nx *= 2;
 
-    level += 1
+    level += 1;
   }
 
   return data.data;
