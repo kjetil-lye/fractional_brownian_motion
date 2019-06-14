@@ -12,7 +12,7 @@ Also comes with a Python library (requires```boost::python``` and ```boost::nump
 
   * A C++11 compatible compiler (tested with GCC and Clang)
   * [cmake](https://cmake.org) >= 3.10.0 (optional)
-  * [boost](https://www.boost.org) >= 1.67.0 (only for python and tests)
+  * [boost](https://www.boost.org) >= 1.67.0 (optional) only for python and tests
   * [python](https://www.python.org) (optional) for python bindings
   * [doxygen](https://doxygen.nl) (optional) for documentation
 
