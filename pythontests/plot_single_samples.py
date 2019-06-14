@@ -116,10 +116,11 @@ for dim in dimensions.keys():
             
 
     
-    plt.tight_layout()
+    f.tight_layout()
 
     f.savefig(f'slice_{motion_type}_{dim}d.png')
     if dim > 1:
+        f2d.tight_layout()
         f2d.savefig(f'slice_2d_{motion_type}_{dim}d.png')
     plt.show()
     
