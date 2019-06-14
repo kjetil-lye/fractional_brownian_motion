@@ -40,32 +40,38 @@
 namespace fbm {
 
 inline std::vector<double> fractional_brownian_bridge_3d(double H, int nx,
-    const std::vector<double>& X) {
+    const std::vector<double>& X, bool set_sides_to_zero) {
     FBM_ASSERT_GREATER_THAN_ZERO(nx)
 
     std::vector<double> bridge((nx + 1) * (nx + 1) * (nx + 1), 0);
 
-    fractional_brownian_bridge_3d(bridge.data(), H, nx, X.data());
+    fractional_brownian_bridge_3d(bridge.data(), H, nx, X.data(),
+        set_sides_to_zero);
 
     return bridge;
 }
 
 inline void fractional_brownian_bridge_3d(double* data_out_pointer, double H,
-    int nx, const double* X) {
+    int nx, const double* X, bool set_sides_to_zero) {
 
     FBM_ASSERT_POWER_OF_TWO(nx)
     FBM_ASSERT_GREATER_THAN_ZERO(nx)
     impl::Data3D data(data_out_pointer, nx + 1);
 
-    impl::VarianceFBM3D variance(X, nx + 1, H);
+    impl::VarianceFBM3D variance(X, nx + 1, H, set_sides_to_zero);
 
     int level_nx = 1;
 
     int level = 1;
 
     // We do not want to set data on the boundary
-    auto not_on_boundary = [&](int x, int y, int z) {
-        return x != 0 && x != nx && y != 0 && y != nx && z != 0 && z != nx;
+    auto not_on_boundary = [&](int x, int y, int z) -> bool {
+
+        if (set_sides_to_zero) {
+            return x != 0 && x != nx && y != 0 && y != nx && z != 0 && z != nx;
+        } else {
+            return true;
+        }
     };
 
     // This throws away data we are trying to set on the boundary
@@ -152,31 +158,36 @@ inline void fractional_brownian_bridge_3d(double* data_out_pointer, double H,
 }
 
 inline std::vector<double> fractional_brownian_bridge_2d(double H, int nx,
-    const std::vector<double>& X) {
+    const std::vector<double>& X, bool set_sides_to_zero) {
     FBM_ASSERT_GREATER_THAN_ZERO(nx)
 
     std::vector<double> bridge((nx + 1) * (nx + 1), 0);
 
-    fractional_brownian_bridge_2d(bridge.data(), H, nx, X.data());
+    fractional_brownian_bridge_2d(bridge.data(), H, nx, X.data(),
+        set_sides_to_zero);
 
     return bridge;
 }
 
 inline void fractional_brownian_bridge_2d(double* data_out_pointer, double H,
-    int nx, const double* X) {
+    int nx, const double* X, bool set_sides_to_zero) {
     FBM_ASSERT_POWER_OF_TWO(nx)
     FBM_ASSERT_GREATER_THAN_ZERO(nx)
     impl::Data2D data(data_out_pointer, nx + 1);
 
-    impl::VarianceFBM2D variance(X, nx + 1, H);
+    impl::VarianceFBM2D variance(X, nx + 1, H, set_sides_to_zero);
 
     int level_nx = 1;
 
     int level = 1;
 
     // We do not want to set data on the boundary
-    auto not_on_boundary = [&](int x, int y) {
-        return x != 0 && x != nx && y != 0 && y != nx;
+    auto not_on_boundary = [&](int x, int y) -> bool {
+        if (set_sides_to_zero) {
+            return x != 0 && x != nx && y != 0 && y != nx;
+        } else {
+            return true;
+        }
     };
 
     // This throws away data we are trying to set on the boundary
@@ -223,6 +234,7 @@ inline void fractional_brownian_bridge_2d(double* data_out_pointer, double H,
         level += 1;
     }
 }
+
 
 inline std::vector<double> fractional_brownian_bridge_1d(double H, int nx,
     const std::vector<double>& X) {
@@ -275,6 +287,27 @@ inline void fractional_brownian_bridge_1d(double* data_out_pointer, double H,
 
         level += 1;
     }
+}
+
+
+inline std::vector<double> fractional_brownian_motion_1d(double H, int nx,
+    const std::vector<double>& X) {
+    FBM_ASSERT_GREATER_THAN_ZERO(nx);
+
+    std::vector<double> motion((nx + 1), 0);
+
+    fractional_brownian_motion_1d(motion.data(), H, nx, X.data());
+
+    return motion;
+
+}
+
+inline void fractional_brownian_motion_1d(double* data_out, double H, int nx,
+    const double* X) {
+
+    // Fix the last element, the rest will just be plain old Brownian motion
+    data_out[nx] = X[0];
+    fractional_brownian_bridge_1d(data_out, H, nx, X + 1);
 }
 } // namespace fbm
 

@@ -3,7 +3,7 @@
 #include <fbm/fbm.hpp>
 #include <fbm/generate_normal_random.hpp>
 
-BOOST_AUTO_TEST_SUITE(FBM2DTests)
+BOOST_AUTO_TEST_SUITE(FBB2DTests)
 
 
 BOOST_AUTO_TEST_CASE(BridgeZero2D) {
@@ -22,6 +22,26 @@ BOOST_AUTO_TEST_CASE(BridgeZero2D) {
 
     }
 }
+
+BOOST_AUTO_TEST_CASE(BridgeZero2DNotSidesToZero) {
+    const int N = 64;
+    auto X = fbm::generate_normal_random((N) * (N));
+
+    auto fBm = fbm::fractional_brownian_bridge_2d(0.5, N, X, false);
+
+    BOOST_TEST((N + 1) * (N + 1) == fBm.size());
+
+    BOOST_TEST(fBm[0] == 0);
+    BOOST_TEST(fBm[N] == 0);
+    BOOST_TEST(fBm[N * (N + 1)] == 0);
+    BOOST_TEST(fBm[N * (N + 1) + N] == 0);
+
+    for (size_t i = 1; i < N; ++i) {
+        BOOST_TEST(0.0 != fBm[i]);
+        BOOST_TEST(0.0 != fBm[(N + 1) * i]);
+    }
+}
+
 
 
 BOOST_AUTO_TEST_CASE(SmallSizeTwo) {
@@ -79,6 +99,33 @@ BOOST_AUTO_TEST_CASE(Nested) {
 
 
 
+BOOST_AUTO_TEST_CASE(NestedNotSetSidesToZero) {
+
+    //return;
+    std::vector<int> resolutions = {8, 16, 32, 64, 128};
+
+
+    const int N = 2 * resolutions.back();
+    auto X = fbm::generate_normal_random((N) * (N));
+
+    for (auto resolution : resolutions) {
+
+        auto fBm = fbm::fractional_brownian_bridge_2d(0.5, resolution, X, false);
+        auto fBm_fine = fbm::fractional_brownian_bridge_2d(0.5, 2 * resolution, X,
+                false);
+
+        for (int i = 0; i < resolution; ++i) {
+            for (int j = 0; j < resolution; ++j) {
+
+                BOOST_TEST(fBm[i * (resolution + 1) + j] == fBm_fine[2 * i *
+                        (2 * resolution + 1) + 2 * j]);
+            }
+        }
+    }
+
+}
+
+
 BOOST_AUTO_TEST_CASE(ThrowsOnNonePowerOfTwo) {
     std::vector<int> non_powers = {3, 5, 6, 12};
 
@@ -95,6 +142,9 @@ BOOST_AUTO_TEST_CASE(ThrowsOnNonePowerOfTwo) {
         BOOST_TEST(false);
     }
 }
+
+
+
 
 BOOST_AUTO_TEST_CASE(ThrowsOnNonPositive) {
     std::vector<int> non_positives = {-10, -4, 0};

@@ -3,7 +3,7 @@
 #include <fbm/fbm.hpp>
 #include <fbm/generate_normal_random.hpp>
 
-BOOST_AUTO_TEST_SUITE(FBM3DTests)
+BOOST_AUTO_TEST_SUITE(FBB3DTests)
 
 BOOST_AUTO_TEST_CASE(BridgeZero3D) {
     const int N = 64;
@@ -25,6 +25,73 @@ BOOST_AUTO_TEST_CASE(BridgeZero3D) {
             BOOST_TEST(0.0 == fBm[i * (N + 1) + N]);
         }
     }
+}
+
+
+BOOST_AUTO_TEST_CASE(BridgeZero3DNotSetZero) {
+    const int N = 64;
+    auto X = fbm::generate_normal_random((N) * (N) * (N));
+
+    auto fBm = fbm::fractional_brownian_bridge_3d(0.5, N, X, false);
+
+    BOOST_TEST((N + 1) * (N + 1) * (N + 1) == fBm.size());
+
+
+    BOOST_TEST(0.0 == fBm[0]);
+    BOOST_TEST(0.0 == fBm[N]);
+    BOOST_TEST(0.0 == fBm[N + (N + 1)*N]);
+    BOOST_TEST(0.0 == fBm[(N + 1)*N]);
+
+    BOOST_TEST(0.0 == fBm[(N + 1) * (N + 1)*N]);
+    BOOST_TEST(0.0 == fBm[(N + 1) * (N + 1)*N + N]);
+    BOOST_TEST(0.0 == fBm[(N + 1) * (N + 1)*N + N + (N + 1)*N]);
+    BOOST_TEST(0.0 == fBm[(N + 1) * (N + 1)*N + (N + 1)*N]);
+
+
+    // here we can be unlucky, therefore, we sum over each side
+    {
+        double sum = 0.0;
+
+        for (size_t i = 1; i < N; ++i) {
+            for (size_t j = 1; j < N; ++j) {
+                sum += std::abs(fBm[i + (N + 1) * j]);
+            }
+        }
+
+        BOOST_TEST(sum > 0);
+    }
+
+
+    // here we can be unlucky, therefore, we sum over each side
+    {
+        double sum = 0.0;
+
+        for (size_t i = 1; i < N; ++i) {
+            for (size_t j = 1; j < N; ++j) {
+                sum += std::abs(fBm[i + (N + 1) * (N + 1) * j]);
+
+            }
+        }
+
+        BOOST_TEST(sum > 0);
+    }
+
+    // here we can be unlucky, therefore, we sum over each side
+    {
+        double sum = 0.0;
+
+        for (size_t i = 1; i < N; ++i) {
+            for (size_t j = 1; j < N; ++j) {
+                sum += std::abs(fBm[i * (N + 1) + (N + 1) * (N + 1) * j]);
+
+            }
+        }
+
+        BOOST_TEST(sum > 0);
+    }
+
+
+
 }
 
 BOOST_AUTO_TEST_CASE(SmallSizeTwo) {
@@ -82,6 +149,39 @@ BOOST_AUTO_TEST_CASE(Nested) {
     }
 
 }
+
+
+
+
+BOOST_AUTO_TEST_CASE(NestedSidesNotZero) {
+    // Check that is is indeed just nested
+    std::vector<int> resolutions = {8, 16, 32, 64};
+
+
+    const int N = 2 * resolutions.back();
+    auto X = fbm::generate_normal_random((N) * (N) * (N));
+
+    for (auto resolution : resolutions) {
+
+        auto fBm = fbm::fractional_brownian_bridge_3d(0.5, resolution, X, false);
+        auto fBm_fine = fbm::fractional_brownian_bridge_3d(0.5, 2 * resolution, X,
+                false);
+
+        for (int i = 0; i < resolution; ++i) {
+            for (int j = 0; j < resolution; ++j) {
+                for (int k = 0; k < resolution; ++k) {
+
+                    BOOST_TEST(fBm[i * (resolution + 1) * (resolution + 1) + j *
+                            (resolution + 1) + k] == fBm_fine[2 * i *
+                            (2 * resolution + 1) * (2 * resolution + 1) + 2 * j * (2 * resolution + 1) +
+                            2 * k]);
+                }
+            }
+        }
+    }
+
+}
+
 
 
 BOOST_AUTO_TEST_CASE(ThrowsOnNonePowerOfTwo) {

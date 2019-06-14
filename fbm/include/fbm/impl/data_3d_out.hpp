@@ -10,8 +10,7 @@ namespace impl {
 class Data3DOut {
 public:
     Data3DOut(Data3D& data, std::function<bool(int, int, int)> acceptor) :
-        data(data), acceptor(acceptor)
-    {
+        data(data), acceptor(acceptor) {
         // empty
     }
 

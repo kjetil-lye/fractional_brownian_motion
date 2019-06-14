@@ -4,44 +4,42 @@
 #include <fbm/fbm.hpp>
 #include <fbm/generate_normal_random.hpp>
 
-BOOST_AUTO_TEST_SUITE(FBM1DTests)
+BOOST_AUTO_TEST_SUITE(FBB1DTests)
 
-BOOST_AUTO_TEST_CASE(MotionZeroStart1D) {
+BOOST_AUTO_TEST_CASE(BridgeZero1D) {
     const int N = 128;
-    auto X = fbm::generate_normal_random(N);
+    auto X = fbm::generate_normal_random(N - 1);
 
-    auto fBm = fbm::fractional_brownian_motion_1d(0.5, N, X);
+    auto fBm = fbm::fractional_brownian_bridge_1d(0.5, N, X);
 
     BOOST_TEST(N + 1 == fBm.size());
     BOOST_TEST(0.0 == fBm[0]);
-    BOOST_TEST(X[0], fBm[N]);
+    BOOST_TEST(0.0 == fBm[N]);
 }
 
 
 BOOST_AUTO_TEST_CASE(SmallSizeTwo) {
     // Check that we can create small sizes
     int N = 2;
-    auto X = fbm::generate_normal_random((N));
+    auto X = fbm::generate_normal_random((N - 1));
 
-    auto fBm = fbm::fractional_brownian_motion_1d(0.5, N, X);
+    auto fBm = fbm::fractional_brownian_bridge_1d(0.5, N, X);
 
     BOOST_TEST(fBm.size() == 3);
-    BOOST_TEST(fBm[0] == 0);
-    BOOST_TEST(fBm[2] == X[0]);
 }
 
 BOOST_AUTO_TEST_CASE(SmallSizeOne) {
     // Check that we can create small sizes
     int N = 1;
-    auto X = fbm::generate_normal_random(N);
+    auto X = fbm::generate_normal_random((N - 1));
 
-    auto fBm = fbm::fractional_brownian_motion_1d(0.5, N, X);
+    auto fBm = fbm::fractional_brownian_bridge_1d(0.5, N, X);
 
     BOOST_TEST(fBm.size() == 2);
 
-    BOOST_TEST(fBm[0] == 0);
-    BOOST_TEST(fBm[1] == X[0]);
-
+    for (auto d : fBm) {
+        BOOST_TEST(d == 0);
+    }
 
 
 }
@@ -50,11 +48,11 @@ BOOST_AUTO_TEST_CASE(ThrowsOnNonePowerOfTwo) {
     std::vector<int> non_powers = {3, 5, 6, 12};
 
     for (auto non_power : non_powers) {
-        auto X = fbm::generate_normal_random((non_power));
+        auto X = fbm::generate_normal_random((non_power - 1));
         //Boost check throw wouldn't work
 
         try {
-            auto fBm = fbm::fractional_brownian_motion_1d(0.5, non_power, X);
+            auto fBm = fbm::fractional_brownian_bridge_1d(0.5, non_power, X);
         } catch (std::runtime_error e) {
             continue;
         }
@@ -72,7 +70,7 @@ BOOST_AUTO_TEST_CASE(ThrowsOnNonPositive) {
         //Boost check throw wouldn't work
 
         try {
-            auto fBm = fbm::fractional_brownian_motion_1d(0.5, non_positive, X);
+            auto fBm = fbm::fractional_brownian_bridge_1d(0.5, non_positive, X);
         } catch (std::runtime_error e) {
             continue;
         }
@@ -90,10 +88,10 @@ BOOST_AUTO_TEST_CASE(HoelderExponent, * boost::unit_test::tolerance(0.3)) {
         std::vector<int> resolutions = {4096, 2 * 4096, 4 * 4096, 8 * 4096};
 
         const int N = resolutions.back();
-        auto X = fbm::generate_normal_random(N);
+        auto X = fbm::generate_normal_random(N - 1);
 
         for (auto resolution : resolutions) {
-            auto fBm = fbm::fractional_brownian_motion_1d(H, resolution, X);
+            auto fBm = fbm::fractional_brownian_bridge_1d(H, resolution, X);
 
             double average_alpha = 0.0;
 
@@ -121,8 +119,8 @@ BOOST_AUTO_TEST_CASE(Nested) {
 
     for (auto resolution : resolutions) {
 
-        auto fBm = fbm::fractional_brownian_motion_1d(0.5, resolution, X);
-        auto fBm_fine = fbm::fractional_brownian_motion_1d(0.5, 2 * resolution, X);
+        auto fBm = fbm::fractional_brownian_bridge_1d(0.5, resolution, X);
+        auto fBm_fine = fbm::fractional_brownian_bridge_1d(0.5, 2 * resolution, X);
 
         for (int i = 0; i < resolution; ++i) {
             BOOST_TEST(fBm[i] == fBm_fine[2 * i]);
