@@ -69,9 +69,9 @@ install:
   - sudo apt-get install -y make cmake git build-essential wget doxygen libomp-dev libopenmpi-dev m4 unzip  libcurl4-openssl-dev
 
   # Python 3.7
-  - sudo add-apt-repository ppa:deadsnakes/ppa
+  - sudo add-apt-repository -y ppa:deadsnakes/ppa
   - travis_retry sudo apt-get update -qq
-  - sudo apt-get install python3.7
+  - sudo apt-get install -y python3.7
   - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
   - sudo python3.7 get-pip.py
   - pip3.7 install numpy
@@ -95,3 +95,4 @@ script:
   - cmake .. -DCMAKE_CXX_COMPILER=$(which ${CXX}) -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=${INSTALL_PREFIX}
   - make
   - ./fbmtest/fbmtest
+  - PYTHONPATH=$PYTHONPATH:. python3.7 ../pythontests/test_fbm.py
