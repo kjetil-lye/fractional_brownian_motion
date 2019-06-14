@@ -81,8 +81,8 @@ install:
   - travis_retry wget https://dl.bintray.com/boostorg/release/${BOOST_MAJOR_VERSION}.${BOOST_MINOR_VERSION}.${BOOST_RELEASE_VERSION}/source/boost_${BOOST_MAJOR_VERSION}_${BOOST_MINOR_VERSION}_${BOOST_RELEASE_VERSION}.tar.bz2
   - tar xvf boost_${BOOST_MAJOR_VERSION}_${BOOST_MINOR_VERSION}_${BOOST_RELEASE_VERSION}.tar.bz2 &>/dev/null
   - cd boost_${BOOST_MAJOR_VERSION}_${BOOST_MINOR_VERSION}_${BOOST_RELEASE_VERSION}
-  - CXX=${COMPILER_CPP} ./bootstrap.sh --with-python=`which python3.7` --with-libraries=python --with-test --prefix=$INSTALL_PREFIX
-  - travis_wait 30 ./b2 -d0 --link=static threading=multi --toolset=$CC --layout=tagged install
+  - CXX=${COMPILER_CPP} ./bootstrap.sh --with-python=`which python3.7` --with-libraries=python  --prefix=$INSTALL_PREFIX
+  - travis_wait 30 ./b2 -d0 --link=static threading=multi --toolset=$CC --with-test --layout=tagged install
 
   - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${INSTALL_PREFIX}/lib:${INSTALL_PREFIX}/lib64
 
