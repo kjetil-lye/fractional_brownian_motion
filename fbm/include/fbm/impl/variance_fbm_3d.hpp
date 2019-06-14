@@ -1,5 +1,7 @@
 #pragma once
 #include <cmath>
+#include <cassert>
+
 namespace fbm {
 namespace impl {
 class VarianceFBM3D {
@@ -11,7 +13,13 @@ public:
         : X(X), nx(nx), ny(nx), nz(nx), H(H) {}
 
     double operator()(int x, int y, int z, int level) const {
-        return variancefBm(level) * X[z * nx * ny + y * nx + x];
+        // If we are on the boundary, we don't return any variance
+        if (x == 0 || x == nx - 1 || y == 0 || y == ny - 1 || z == 0 || z == nz - 1) {
+            return 0;
+        }
+
+        assert(counter >= 0 && counter < (nx - 2) * (nx - 2) * (nx - 2));
+        return variancefBm(level) * X[counter++];
     }
 
     double variancefBm(int level) const {
@@ -23,6 +31,8 @@ private:
     const double* X;
     int nx, ny, nz;
     double H;
+
+    mutable long long counter = 0;
 };
 }
 }

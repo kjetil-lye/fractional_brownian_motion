@@ -11,10 +11,37 @@
 #include "fbm/impl/data_1d_out.hpp"
 #include "fbm/impl/variance_fbm_1d.hpp"
 
+#include <exception>
+#include "fbm/impl/is_power_of_two.hpp"
+
+#include <string>
+#include <sstream>
+
+#define FBM_ASSERT_POWER_OF_TWO(x) { \
+    if(!fbm::impl::is_power_of_two(x) && x!= 1) {\
+        std::stringstream message; \
+        message << "The fBm bridge algorithm needs the size to be a power of two.\n"\
+                << "Given: " << x << " (variable "<< #x <<")\n\n"\
+<< "In " << __FILE__ << " at " << __LINE__ << "\n"; \
+    throw std::runtime_error(message.str().c_str());\
+} \
+}
+
+#define FBM_ASSERT_GREATER_THAN_ZERO(x) { \
+    if(x<=0) {\
+        std::stringstream message; \
+        message << "The fBm bridge algorithm needs the size positive.\n"\
+                << "Given: " << x << " (variable "<< #x <<")\n\n"\
+<< "In " << __FILE__ << " at " << __LINE__ << "\n"; \
+    throw std::runtime_error(message.str().c_str());\
+} \
+}
+
 namespace fbm {
 
 inline std::vector<double> fractional_brownian_bridge_3d(double H, int nx,
     const std::vector<double>& X) {
+    FBM_ASSERT_GREATER_THAN_ZERO(nx)
 
     std::vector<double> bridge((nx + 1) * (nx + 1) * (nx + 1), 0);
 
@@ -25,6 +52,9 @@ inline std::vector<double> fractional_brownian_bridge_3d(double H, int nx,
 
 inline void fractional_brownian_bridge_3d(double* data_out_pointer, double H,
     int nx, const double* X) {
+
+    FBM_ASSERT_POWER_OF_TWO(nx)
+    FBM_ASSERT_GREATER_THAN_ZERO(nx)
     impl::Data3D data(data_out_pointer, nx + 1);
 
     impl::VarianceFBM3D variance(X, nx + 1, H);
@@ -123,6 +153,7 @@ inline void fractional_brownian_bridge_3d(double* data_out_pointer, double H,
 
 inline std::vector<double> fractional_brownian_bridge_2d(double H, int nx,
     const std::vector<double>& X) {
+    FBM_ASSERT_GREATER_THAN_ZERO(nx)
 
     std::vector<double> bridge((nx + 1) * (nx + 1), 0);
 
@@ -133,6 +164,8 @@ inline std::vector<double> fractional_brownian_bridge_2d(double H, int nx,
 
 inline void fractional_brownian_bridge_2d(double* data_out_pointer, double H,
     int nx, const double* X) {
+    FBM_ASSERT_POWER_OF_TWO(nx)
+    FBM_ASSERT_GREATER_THAN_ZERO(nx)
     impl::Data2D data(data_out_pointer, nx + 1);
 
     impl::VarianceFBM2D variance(X, nx + 1, H);
@@ -193,6 +226,7 @@ inline void fractional_brownian_bridge_2d(double* data_out_pointer, double H,
 
 inline std::vector<double> fractional_brownian_bridge_1d(double H, int nx,
     const std::vector<double>& X) {
+    FBM_ASSERT_GREATER_THAN_ZERO(nx)
 
     std::vector<double> bridge((nx + 1), 0);
 
@@ -203,6 +237,8 @@ inline std::vector<double> fractional_brownian_bridge_1d(double H, int nx,
 
 inline void fractional_brownian_bridge_1d(double* data_out_pointer, double H,
     int nx, const double* X) {
+    FBM_ASSERT_POWER_OF_TWO(nx)
+    FBM_ASSERT_GREATER_THAN_ZERO(nx)
     impl::Data1D data(data_out_pointer, nx + 1);
 
     impl::VarianceFBM1D variance(X, nx + 1, H);
@@ -241,3 +277,6 @@ inline void fractional_brownian_bridge_1d(double* data_out_pointer, double H,
     }
 }
 } // namespace fbm
+
+#undef FBM_ASSERT_GREATER_THAN_ZERO
+#undef FBM_ASSERT_POWER_OF_TWO
