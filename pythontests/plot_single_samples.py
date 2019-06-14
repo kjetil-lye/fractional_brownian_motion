@@ -2,11 +2,27 @@ import fbmpy
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-dimensions = {
-    1 : fbmpy.fractional_brownian_bridge_1d,
-    2 : fbmpy.fractional_brownian_bridge_2d,
-    3 : fbmpy.fractional_brownian_bridge_3d
-}
+import sys
+
+motion_type=None
+if len(sys.argv) == 1 or sys.argv[1] == 'bridge':
+    dimensions = {
+        1 : fbmpy.fractional_brownian_bridge_1d,
+        2 : fbmpy.fractional_brownian_bridge_2d,
+        3 : fbmpy.fractional_brownian_bridge_3d
+    }
+    motion_type='bridge'
+elif sys.argv[1] == 'motion':
+    dimensions = {
+        1 : fbmpy.fractional_brownian_motion_1d,
+        2 : fbmpy.fractional_brownian_motion_2d,
+        3 : fbmpy.fractional_brownian_motion_3d
+    }
+    motion_type='motion'
+else:
+    print(f"Unknown type {sys.argv[1]}. Possible choices:")
+    print("\t* motion\n\t*bridge")
+    exit(1)
 
 cut = {
     1 : lambda x,n : x[:-1],
@@ -25,7 +41,7 @@ for dim in dimensions.keys():
     f, axes = plt.subplots(num_slices, len(Hs), sharey='all',
                            figsize=(len(Hs)*8,  6*num_slices),
                            sharex='all')
-    f.suptitle(f"Fractional Brownian motion, slices of {dim}D")
+    f.suptitle(f"Fractional Brownian {motion_type}, slices of {dim}D")
 
     if dim < 3:
         num2dplots = 1
@@ -36,7 +52,7 @@ for dim in dimensions.keys():
                            figsize=(len(Hs)*8,  6*num2dplots),
                                sharex='all', subplot_kw={'projection': '3d'})
     
-        f2d.suptitle(f"Fractional Brownian motion, 2D slices of {dim}D")
+        f2d.suptitle(f"Fractional Brownian {motion_type}, 2D slices of {dim}D")
 
     resolution = 128
     X = np.random.normal(0, 1, (resolution-1)**dim)
@@ -99,9 +115,9 @@ for dim in dimensions.keys():
     
     plt.tight_layout()
 
-    f.savefig(f'slice_{dim}d.png')
+    f.savefig(f'slice_{motion_type}_{dim}d.png')
     if dim > 1:
-        f2d.savefig(f'slice_2d_{dim}d.png')
+        f2d.savefig(f'slice_2d_{motion_type}_{dim}d.png')
     plt.show()
     
 
