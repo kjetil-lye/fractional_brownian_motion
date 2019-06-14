@@ -13,3 +13,5 @@ set_target_properties(fbmpy PROPERTIES PREFIX "")
 
 target_include_directories(fbmpy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(fbmpy Boost::python${FBM_PYTHON_VERSION_PURE} Boost::numpy${FBM_PYTHON_VERSION_PURE} fbm Python::Python)
+
+configure_file(__init__.py ${CMAKE_CURRENT_BINARY_DIR}/__init__.py COPYONLY)

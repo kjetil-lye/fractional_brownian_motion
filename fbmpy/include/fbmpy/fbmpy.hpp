@@ -5,7 +5,7 @@
 namespace fbmpy {
 
 //! Adapter function for fbm::generate_fractional_brownian_bridge
-inline boost::python::numpy::ndarray generate_fractional_brownian_bridge_3d(
+inline boost::python::numpy::ndarray fractional_brownian_bridge_3d(
     double H, int nx, const boost::python::numpy::ndarray& X) {
     Py_intptr_t shape[1] = {(nx + 1)* (nx + 1)* (nx + 1)};
     auto bridge_data = boost::python::numpy::zeros(1, shape,
@@ -23,7 +23,7 @@ inline boost::python::numpy::ndarray generate_fractional_brownian_bridge_3d(
 
 
 //! Adapter function for fbm::generate_fractional_brownian_bridge
-inline boost::python::numpy::ndarray generate_fractional_brownian_bridge_2d(
+inline boost::python::numpy::ndarray fractional_brownian_bridge_2d(
     double H, int nx, const boost::python::numpy::ndarray& X) {
     Py_intptr_t shape[1] = {(nx + 1)* (nx + 1)};
     auto bridge_data = boost::python::numpy::zeros(1, shape,
@@ -41,7 +41,7 @@ inline boost::python::numpy::ndarray generate_fractional_brownian_bridge_2d(
 
 
 //! Adapter function for fbm::generate_fractional_brownian_bridge
-inline boost::python::numpy::ndarray generate_fractional_brownian_bridge_1d(
+inline boost::python::numpy::ndarray fractional_brownian_bridge_1d(
     double H, int nx, const boost::python::numpy::ndarray& X) {
     Py_intptr_t shape[1] = {(nx + 1)};
     auto bridge_data = boost::python::numpy::zeros(1, shape,
