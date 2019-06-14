@@ -1,16 +1,16 @@
 /* Copyright (c) 2019 Kjetil Olsen Lye, ETH Zurich
  * MIT License
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -185,4 +185,33 @@ BOOST_AUTO_TEST_CASE(ThrowsOnNonPositive) {
         BOOST_TEST(false);
     }
 }
+
+
+BOOST_AUTO_TEST_CASE(NonZeroInterior) {
+    // We generate a fake random vector with constnat value 1.0
+    // This should guarantee that we never get any zero values in the interior.
+    const int N = 64;
+
+    std::vector<double> X(N * N, 1);
+
+    auto fBm = fbm::fractional_brownian_bridge_2d(0.5, N, X);
+
+    BOOST_TEST((N + 1) * (N + 1) == fBm.size());
+
+    for (size_t i = 0; i < N + 1; ++i) {
+        BOOST_TEST(0.0 == fBm[i]);
+        BOOST_TEST(0.0 == fBm[i + N * (N + 1)]);
+        BOOST_TEST(0.0 == fBm[(N + 1) * i]);
+        BOOST_TEST(0.0 == fBm[(N + 1) * i + N]);
+
+    }
+
+    for (size_t i = 1; i < N; ++i) {
+        for (size_t j = 1; j < N; ++j) {
+            BOOST_TEST(0.0 != fBm[i + j * (N + 1)]);
+        }
+    }
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

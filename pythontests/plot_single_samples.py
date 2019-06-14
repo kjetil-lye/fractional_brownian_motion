@@ -23,7 +23,10 @@ else:
     print(f"Unknown type {sys.argv[1]}. Possible choices:")
     print("\t* motion\n\t*bridge")
     exit(1)
-
+if len(sys.argv) < 3:
+    resolution = 128
+else:
+    resolution = int(sys.argv[2])
 cut = {
     1 : lambda x,n : x[:-1],
     2 : lambda x,n : x.reshape(n+1, n+1)[:-1, :-1],
@@ -54,7 +57,7 @@ for dim in dimensions.keys():
     
         f2d.suptitle(f"Fractional Brownian {motion_type}, 2D slices of {dim}D")
 
-    resolution = 128
+
     X = np.random.normal(0, 1, (resolution+1)**dim)
     for n, H in enumerate(Hs):
         fbm = cut[dim](dimensions[dim](H, int(resolution), X), resolution)

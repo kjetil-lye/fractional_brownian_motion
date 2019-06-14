@@ -1,16 +1,16 @@
 /* Copyright (c) 2019 Kjetil Olsen Lye, ETH Zurich
  * MIT License
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -140,7 +140,7 @@ inline void fractional_brownian_bridge_3d(double* data_out_pointer, double H,
 
                     // SIDES
                     // x
-                    data_out(mid_x, mid_x, left_z) =
+                    data_out(mid_x, mid_y, left_z) =
                         (data(left_x, left_y, left_z) + data(right_x, left_y, left_z) +
                             data(left_x, right_y, left_z) + data(right_x, right_y, left_z)) /
                         4.0 +
@@ -195,6 +195,8 @@ inline void fractional_brownian_bridge_2d(double* data_out_pointer, double H,
     int nx, const double* X, bool set_sides_to_zero) {
     FBM_ASSERT_POWER_OF_TWO(nx)
     FBM_ASSERT_GREATER_THAN_ZERO(nx)
+
+
     impl::Data2D data(data_out_pointer, nx + 1);
 
     impl::VarianceFBM2D variance(X, nx + 1, H, set_sides_to_zero);
@@ -217,7 +219,7 @@ inline void fractional_brownian_bridge_2d(double* data_out_pointer, double H,
 
     while (level_nx < nx) {
 
-        int factor = nx / (2 * level_nx);
+        const int factor = nx / (2 * level_nx);
 
         for (int y = 0; y < level_nx; ++y) {
             for (int x = 0; x < level_nx; ++x) {
@@ -243,7 +245,7 @@ inline void fractional_brownian_bridge_2d(double* data_out_pointer, double H,
 
                 // SIDE
                 // x
-                data_out(mid_x, mid_x) =
+                data_out(mid_x, mid_y) =
                     (data(left_x, left_y) + data(right_x, left_y) +
                         data(left_x, right_y) + data(right_x, right_y)) /
                     4.0 +

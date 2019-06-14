@@ -1,16 +1,16 @@
 /* Copyright (c) 2019 Kjetil Olsen Lye, ETH Zurich
  * MIT License
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,7 +30,11 @@ class VarianceFBM2D {
 public:
 
     VarianceFBM2D(const double* X, int nx, double H, bool set_sides_to_zero = true)
-        : set_sides_to_zero(set_sides_to_zero), X(X), nx(nx), ny(nx), H(H) {}
+        : set_sides_to_zero(set_sides_to_zero), X(X), nx(nx), ny(nx), H(H) {
+        assert(0 < H);
+        assert(H < 1);
+
+    }
 
     //! @todo Figure out the global indexing here at some point
     double operator()(int x, int y, int level) const {
@@ -58,10 +62,10 @@ public:
     }
 
 private:
-    bool set_sides_to_zero;
+    const bool set_sides_to_zero;
     const double* X;
-    int nx, ny;
-    double H;
+    const int nx, ny;
+    const double H;
 
     mutable long long counter = 0;
 };
