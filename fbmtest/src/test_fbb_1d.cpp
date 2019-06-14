@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(ThrowsOnNonePowerOfTwo) {
 
         try {
             auto fBm = fbm::fractional_brownian_bridge_1d(0.5, non_power, X);
-        } catch (std::runtime_error e) {
+        } catch (std::runtime_error& e) {
             continue;
         }
 
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(ThrowsOnNonPositive) {
 
         try {
             auto fBm = fbm::fractional_brownian_bridge_1d(0.5, non_positive, X);
-        } catch (std::runtime_error e) {
+        } catch (std::runtime_error& e) {
             continue;
         }
 

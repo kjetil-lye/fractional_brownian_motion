@@ -55,7 +55,7 @@ for dim in dimensions.keys():
         f2d.suptitle(f"Fractional Brownian {motion_type}, 2D slices of {dim}D")
 
     resolution = 128
-    X = np.random.normal(0, 1, (resolution-1)**dim)
+    X = np.random.normal(0, 1, (resolution+1)**dim)
     for n, H in enumerate(Hs):
         fbm = cut[dim](dimensions[dim](H, int(resolution), X), resolution)
         spatial_x = np.linspace(0, 1, resolution)

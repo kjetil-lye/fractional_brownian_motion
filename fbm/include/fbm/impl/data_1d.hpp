@@ -3,8 +3,7 @@
 namespace fbm {
 namespace impl {
 
-class Data1D {
-public:
+struct Data1D {
     Data1D(double* data, int nx) : data(data), nx(nx) {}
 
     double& operator()(int x) {
@@ -16,4 +15,5 @@ public:
 
     int nx;
 };
-}}
+}
+}
