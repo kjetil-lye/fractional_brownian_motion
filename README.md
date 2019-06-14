@@ -35,4 +35,3 @@ x = np.linspace(0, 1, N+1)
 plt.plot(x, d)
 plt.show()
 ```
-**
