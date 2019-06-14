@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/kjetil-lye/fractional_brownian_motion.svg?branch=master)](https://travis-ci.org/kjetil-lye/fractional_brownian_motion)
 # Fractional Brownian motion
 
 A *header only* C++ library for generating fractional Brownian motion in 1D, 2D and 3D (the latter two are technically variants of a fractional Brownian bridge).
@@ -34,3 +35,4 @@ x = np.linspace(0, 1, N+1)
 plt.plot(x, d)
 plt.show()
 ```
+**
