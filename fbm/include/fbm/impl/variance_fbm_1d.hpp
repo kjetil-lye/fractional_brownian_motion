@@ -20,7 +20,8 @@ public:
 
 
         // Todo: make this pure bitshift one day.
-        const int index = (1 << (level - 1)) + x / ((nx - 1) >> (level - 1));
+        const long long index = (1l << (level - 1)) + x / (long(nx - 1) >>
+                (level - 1));
 
         assert(index > 0 && index < nx - 1);
         return variancefBm(level) * X[index - 1];
